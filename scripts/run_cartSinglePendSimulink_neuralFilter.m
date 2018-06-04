@@ -1,17 +1,6 @@
 clc;clear all;close all
 
-
 run('config_cartSinglePend');
-
-% Initialize model parameters 
-% mc = 5;
-% mp = 1;
-% g = -10;
-% L = 2;
-% bX = 0;
-% bT = 0;
-% dist = 0;
-% par.mc = mc ; par.mp = mp; par.g = g; par.L = L; par.bX = bX; par.bT = bT; par.dist = dist;
 
 % set initial conditions, goal conditions, and activation time
 y0 = [0; 0; pi; 0];
@@ -55,8 +44,6 @@ B = [0 ;
     -s/(mc*L)];
 
 %% set control gain  
-% Q = diag( [1,1,1,1]);
-% R = 1e-1;
 K = lqr( A,B,Q,R);
 
 %% run simulink 

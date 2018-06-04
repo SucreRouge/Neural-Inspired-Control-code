@@ -1,5 +1,5 @@
 % parameter config file
-
+% contains parameterset to run inverted pendulum simulations 
 % Add paths required for main script
 rootPath = fileparts(fileparts(mfilename('fullpath') ));
 addpath([rootPath filesep 'functions'])
@@ -17,8 +17,8 @@ dist = 0;
 par.mc = mc ; par.mp = mp; par.g = g; par.L = L; par.bX = bX; par.bT = bT; par.dist = dist;
 
 % control penalties 
-Q = diag( [1,100,1,1]);
-R = 1;
+Q = diag( [1,10,1,1]);
+R = 1e-1;
 p = [-1.1,-1.2,-1.3,-1.4];  % pole placements 
 
 Vd = 0.1*eye(4); % disturbance covariance (state uncertainty) 
@@ -34,7 +34,7 @@ y0 = [-4; 0; pi*11/12; 0];
 yGoal = [1; 0; pi; 0];
 
 % noise parameters
-sensorNoiseVariance = [1e-4 1e-4 1e-3 1e-4]';
-% sensorNoiseVariance = [0; 0; 0; 0 ];
+sensorNoiseVariance = [1e-4 1e-4 1e-4 1e-4]';
+% % sensorNoiseVariance = [0; 0; 0; 0 ];
 distXAccVariance = 1e-4;
 distThetaAccVariance = 1e-4;

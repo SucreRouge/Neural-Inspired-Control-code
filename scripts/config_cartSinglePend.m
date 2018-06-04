@@ -1,5 +1,5 @@
 % parameter config file
-% contains parameterset to run inverted pendulum simulations 
+% contains parameterset to run inverted pendulum simulations. Add test description 
 % Add paths required for main script
 rootPath = fileparts(fileparts(mfilename('fullpath') ));
 addpath([rootPath filesep 'functions'])

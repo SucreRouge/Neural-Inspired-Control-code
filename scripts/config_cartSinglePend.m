@@ -17,8 +17,8 @@ dist = 0;
 par.mc = mc ; par.mp = mp; par.g = g; par.L = L; par.bX = bX; par.bT = bT; par.dist = dist;
 
 % control penalties 
-Q = diag( [1,10,1,1]);
-R = 1e-1;
+Q = diag( [1,1,1,1]);
+R = 1e1;
 p = [-1.1,-1.2,-1.3,-1.4];  % pole placements 
 
 Vd = 0.1*eye(4); % disturbance covariance (state uncertainty) 

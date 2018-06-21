@@ -30,6 +30,14 @@ tout = simout.time;
 yInt = interp1(tout,yout,tInt);
 uInt = interp1(tout,uout,tInt);
 
+e = repmat(yGoal',[size(yout,1),1]) - yout;
+J = sum(sum( e.^2*Q + uout.^2*R ));
+% display( ['Pole placement control, Total cost J = ', num2str(sum(J)) ])
+% display( ['Pole placement control, Total cost J = ',fprintf('%14.2e',sum(J)) ])
+
+fprintf( 'Pole placement control, Total cost J =%14.2e \n',sum(J))
+
+% fprintf('%14.2e',sum(J))
 % determine accelerations, for force on rod 
 yDot = cartSinglePend_matrixOperation(yInt,uInt',par);
 x = yInt(:,1);

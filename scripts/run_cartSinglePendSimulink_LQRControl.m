@@ -33,8 +33,9 @@ uInt = interp1(tout,uout,tInt);
 
 e = repmat(yGoal',[size(yout,1),1]) - yout;
 J = sum(sum( e.^2*Q + uout.^2*R ));
-display( ['LQR control, Total cost J = ',num2str(sum(J)) ])
+% display( ['LQR control, Total cost J = ',num2str(sum(J)) ])
 
+fprintf( 'LQR control, Total cost J =%14.2e \n',sum(J))
 % determine accelerations, for force on rod 
 yDot = cartSinglePend_matrixOperation(yInt,uInt',par);
 x = yInt(:,1);

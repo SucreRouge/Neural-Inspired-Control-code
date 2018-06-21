@@ -28,7 +28,9 @@ STAd = 0;
 STAFunc = @(t) exp(- ((tSTA+STAd)./STAw).^2);
 STA = STAFunc( tSTA ) / norm( STAFunc(tSTA), 1 );
 delayVal = find( cumsum(STA) >=0.5, 1);
-NLDs = 0.3;
+% NLDs = 0;
+% NLDg = 1;
+NLDs = 0.5;
 NLDg = 10;
 
 %% Linearization
@@ -170,6 +172,7 @@ end
 
 
 %% Neural encoding effect 
+
 
 figure('Position',[1500,550,400,400] )
     subplot(211)

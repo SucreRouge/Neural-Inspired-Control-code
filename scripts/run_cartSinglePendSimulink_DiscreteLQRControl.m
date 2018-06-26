@@ -3,14 +3,6 @@ clc;clear all;close all
 run('config_cartSinglePend');
 %% Initialize model parameters 
 % 
-tSamp = 0.1;
-% tSTA = -40:1:0;
-% STAw = [5];
-% STAf = 1;
-% STAd = 20;
-% % STAFunc = @(t) cos( STAf*(t+ STAd)  ).*exp(-(t+STAd).^2 / STAw.^2);
-% STAFunc = @(t) exp(-(t+STAd).^2 / STAw.^2);
-% STA = STAFunc(tSTA);
 
 %% Linearization
 eqTheta = pi;  % which equilibrium? (theta = 0[down], or theta = pi[up] )
@@ -105,67 +97,28 @@ for j = frameStep:frameStep:length(tInt)
 end    
 
 
-%% make video of  [y, x] = ndgrid(1:256);
 
-% % % % % fig_anim = figure( 'Position',[100,550,1000,400] );
-% % % % %  vidfile = VideoWriter('testmovie.mp4','MPEG-4');
-% % % % %  open(vidfile);
-% % % % % for j = frameStep:frameStep:length(tInt)
-% % % % % %     z = sin(x*2*pi/ind)+cos(y*2*pi/ind);
-% % % % % %     im = sc(z, 'hot'); 
-% % % % %     drawCartPendForce( yInt(j,:), tInt(j), Fp(j), par)
-% % % % %     frame = getframe(gcf);
-% % % % %     writeVideo(vidfile, frame);
-% % % % %  end
-% % % % % close(vidfile)
-% % % % % animation
+%% figure of state
+figure();
+subplot(211)
+    scatter3(yout(:,2), yout(:,3), yout(:,4))
+    xlabel('$\dot{x}$')
+    ylabel('$\theta$');
+    zlabel('$\dot{\theta}$')
+    [U,S,V] = svd(yout(:,2:4)','econ');
+    subplot(212)
+    scatter3(V(:,1),V(:,2),V(:,3)*0 )
+    
+%% make movie
 
-
-
-% figure( 'Position',[100,550,1000,400] );
-% frameStep = 1/dt/10;
-% 
-% % drawCartPendForce( yInt(1,:), tInt(1), Fp(1), par)
-% for j = frameStep:frameStep:length(tInt)
-%     drawCartPendForce( yInt(j,:), tInt(j), Fp(j), par)
-% end    
-
-% % axis tight
-% % set(gca,'nextplot','replacechildren','visible','off')
-% set(gca,'nextplot','replacechildren')
-% f = getframe;
-% % [im,map] = rgb2ind(f.cdata,256,'nodither');
-% % im(1,1,1,20) = 0;
-% for j = frameStep:frameStep:length(tInt)
-%    drawCartPendForce( yInt(j,:), tInt(j), Fp(j), par)
-% %   surf(cos(2*pi*k/20)*Z,Z)
-%   f = getframe;
-% %   im(:,:,1,k) = rgb2ind(f.cdata,map,'nodither');
-% end
-% % imwrite(im,map,'DancingPeaks.gif','DelayTime',0,'LoopCount',inf) %g443800
-% 
-% 
-
-
-
-%% Conv check
-
-% hold on
-% stairs(tInt,uInt,'k')
-% %% 
-% sig = squeeze(signal2.signals.values);
-% tS = signal2.time;
-% res = squeeze(signal1.signals.values);
-% tR = signal1.time;
-% % tC = convResult3.time;
-% filt = squeeze(filter.signals.values);
-% 
-% figure();
-% subplot(211)
-% plot(tS,sig,'k')
-% % figure();
-% hold on
-% plot(tR,res,'r')
-% subplot(212)
-% plot(filt(1,:))
-% % legend('sig','sig1','filt')
+if 0 
+    fig_anim = figure( 'Position',[100,550,1000,400] );
+     vidfile = VideoWriter('testmovie.mp4','MPEG-4');
+     open(vidfile);
+    for j = frameStep:frameStep:length(tInt)
+        drawCartSinglePendForce( yInt(j,:), tInt(j), Fp(j), par)
+        frame = getframe(gcf);
+        writeVideo(vidfile, frame);
+     end
+    close(vidfile)
+end

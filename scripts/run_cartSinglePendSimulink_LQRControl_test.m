@@ -3,12 +3,27 @@ clc;clear all;close all
 % Initialize model parameters 
 run('config_cartSinglePend');
 
+%% Linearization
+eqTheta = pi;  % which equilibrium? (theta = 0[down], or theta = pi[up] )
+s = cos(eqTheta);
+A = [ 0   1          0                   0;
+      0   -bX/mc      -mp*g/mc            s*bT/L;
+      0   0          0                   1;
+      0   s*bX/(L*mc) s*(mc+mp)*g/(mc*L)  -bT*(mc+mp)/(mc*mp*L^2)];
+B = [0 ;
+    1/mc;
+    0
+    -s/(mc*L)];
+
+% set control gain  
+K = lqr( A,B,Q,R);
+
 %% run simulink 
-load_system('simulink_Cartpend_noControl')
-set_param('simulink_Cartpend_noControl', 'StopTime', num2str(tLast) )
-set_param('simulink_Cartpend_noControl', 'MaxStep', num2str( dt ) )
-sim('simulink_Cartpend_noControl');
-%  MaxStep
+load_system('simulink_Cartpend_KControl')
+set_param('simulink_Cartpend_KControl', 'StopTime', num2str(tLast) )
+set_param('simulink_Cartpend_KControl', 'MaxStep', num2str( dt ) )
+sim('simulink_Cartpend_KControl');
+
 %% postprocessing
 yout = simout.signals.values(:,1:4);
 uout = simout.signals.values(:,5);
@@ -16,6 +31,11 @@ tout = simout.time;
 yInt = interp1(tout,yout,tInt);
 uInt = interp1(tout,uout,tInt);
 
+e = repmat(yGoal',[size(yout,1),1]) - yout;
+J = sum(sum( e.^2*Q + uout.^2*R ));
+% display( ['LQR control, Total cost J = ',num2str(sum(J)) ])
+
+fprintf( 'LQR control, Total cost J =%14.2e \n',sum(J))
 % determine accelerations, for force on rod 
 yDot = cartSinglePend_matrixOperation(yInt,uInt',par);
 x = yInt(:,1);
@@ -42,9 +62,10 @@ figure('Position',[600,100,500,350]);
     ylabel('Momentum in X (kg*m/s)')
 % Rod tension 
 figure( 'Position',[1100,100,500,350] );
-    plot(tInt,Fp)
+%     plot(tInt,Fp)
+    plot(tInt,uInt)
     xlabel('Time (s)')
-    ylabel('Force in rod (N)')
+    ylabel('Control input u')
 % animate cart
 figure( 'Position',[100,550,1000,400] );
 for j = 10:10:length(tInt)
@@ -52,8 +73,5 @@ for j = 10:10:length(tInt)
 end    
 
 
-%% figure of state
-figure();
-scatter3(yout(:,2), yout(:,3), yout(:,4))
-xlabel('$\dot{x}$')
-ylabel('$\theta$');zlabel('$\dot{\theta}$')
+
+

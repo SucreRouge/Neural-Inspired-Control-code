@@ -1,4 +1,4 @@
-function drawCartPendForce(y, tNow, Fp, pendPar, plotPar)
+function drawCartPendForce(y, tNow, pendPar, plotPar)
 
 % input wrangling 
 x = y(1);
@@ -22,16 +22,7 @@ w2y = 0;
 px = x + L*sin(th);
 py = y - L*cos(th);
 
-if Fp/abs(pendPar.g) > 0
-    col = [1, 0, 0, abs(Fp/pendPar.g)] ;
-elseif Fp/abs(pendPar.g) < 0
-    col = [0, 0,1, abs(Fp/pendPar.g)];
-else 
-    col = [1,1,1,1];
-end
-if max(col(4))>1
-    col(4) = col(4)/max(col(4));
-end
+col = [1,1,1]*0;
 
 plot([-10 10],[0 0],'k','LineWidth',2)
 hold on

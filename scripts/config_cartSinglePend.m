@@ -11,11 +11,14 @@ mc = 5;
 mp = 1;
 g = -10;
 L = 2;
-bX = 1;
-bT = 1;
+bX = 0.5;
+bT = 0.5;
 dist = 0.1;
 par.mc = mc ; par.mp = mp; par.g = g; par.L = L; par.bX = bX; par.bT = bT; par.dist = dist;
 
+
+% xl = [-5,5];
+par.xl = [-10,10];
 % control penalties 
 Q = diag( [1,1,1,10]);
 R = 1e0;
@@ -31,7 +34,8 @@ tSamp = 0.1;
 tInt = dt:dt:tLast;
 
 % control IC and objective
-y0 = [-4; 0; pi*11/12; 0];
+% y0 = [-1; 0; pi*11/12; 0];
+y0 = [-1; 0; pi; 0];
 yGoal = [1; 0; pi; 0];
 
 % noise parameters

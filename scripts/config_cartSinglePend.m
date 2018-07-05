@@ -11,8 +11,8 @@ mc = 5;
 mp = 1;
 g = -10;
 L = 2;
-bX = 0.5;
-bT = 0.5;
+bX = 0.01;
+bT = 0.01;
 dist = 0.1;
 par.mc = mc ; par.mp = mp; par.g = g; par.L = L; par.bX = bX; par.bT = bT; par.dist = dist;
 
@@ -20,8 +20,8 @@ par.mc = mc ; par.mp = mp; par.g = g; par.L = L; par.bX = bX; par.bT = bT; par.d
 % xl = [-5,5];
 par.xl = [-10,10];
 % control penalties 
-Q = diag( [1,1,1,10]);
-R = 1e0;
+Q = diag( [10,100,1,1]);
+R = 1e-0;
 p = [-1.1,-1.2,-1.3,-1.4];  % pole placements 
 
 Vd = 0.1*eye(4); % disturbance covariance (state uncertainty) 
@@ -29,7 +29,7 @@ Vn = 1; %measurement noise
 
 % time parameters
 dt = 0.01; 
-tLast = 10;
+tLast = 15;
 tSamp = 0.1;
 tInt = dt:dt:tLast;
 
@@ -38,8 +38,10 @@ tInt = dt:dt:tLast;
 y0 = [-1; 0; pi; 0];
 yGoal = [1; 0; pi; 0];
 
+
+noise_level = 0.01;
 % noise parameters
-sensorNoiseVariance = [1,1,1,1]'*1e-2;
+sensorNoiseVariance = [1,1,1,1]'*noise_level;
 % % sensorNoiseVariance = [0; 0; 0; 0 ];
-distXAccVariance = 1e-1;
-distThetaAccVariance = 1e-1;
+distXAccVariance = noise_level;
+distThetaAccVariance = noise_level;

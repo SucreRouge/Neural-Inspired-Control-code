@@ -16,7 +16,7 @@ B = [0 ;
     -s/(mc*L)];
 
 %% set control gain  
-R = 1e3
+R = 1e4
 K = lqr( A,B,Q,R);
 
 par.dist = 0;

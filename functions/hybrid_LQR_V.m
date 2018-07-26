@@ -11,7 +11,7 @@ V = Ep+Ek;
 V0 = 20;
 theta_error = pi*0.5;
 E_error =4;
-G=4;
+G=6;
 
 if  ( abs(state(3)-pi ) <= theta_error ) && (abs(V-V0) <E_error)
     u = -K*(state-stateGoal);

@@ -1,5 +1,6 @@
 clc;clear all;close all
 
+run('config_cartSinglePend');
 mc = 10;
 m1 = 1;
 m2 = 1;
@@ -50,3 +51,18 @@ for j = 10:10:length(tInt)
     drawCartDoublePend( yInt(j,:), tInt(j), par )
 end
 
+%% 
+ vidfile = VideoWriter( [rootPath filesep 'figs' filesep 'cartDoublePend_noControl.mp4'],'MPEG-4');
+ vidfile.FrameRate = 10;
+ open(vidfile);
+
+figure( 'Position',[100,550,1000,400] );
+for j = 10:10:length(tInt)
+    drawCartDoublePend( yInt(j,:), tInt(j), par )
+    drawnow
+    hold off 
+    drawnow
+    im = getframe(gcf); 
+    writeVideo(vidfile, im);
+end
+close(vidfile)

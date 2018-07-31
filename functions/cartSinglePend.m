@@ -1,4 +1,4 @@
-function [ dydt,u] = cartSinglePend(t, y, u, par )
+function [ dydt,u] = cartSinglePend( y, u, par )
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 

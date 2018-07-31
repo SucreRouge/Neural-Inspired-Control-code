@@ -21,7 +21,7 @@ K = lqr( A,B,Q,R);
 
 par.dist = 0;
 y0 = [0; 0; pi*12/12; 0];
-y0 = [0; 0; pi*7/10; 0];
+% y0 = [0; 0; pi*7/10; 0];
 % y0 = [0; 0; pi*4/10; 0]; 
 % y0 = [0; 0; pi*2/10; 0];
 
@@ -33,8 +33,6 @@ tLast = 31;
 % tSamp = 0.1;
 tInt = dt:dt:tLast;
 %% simulate cart 
-% [t,yInt] = ode45(@(t,y)cartSinglePend(y, -K*(y-yGoal), par), tInt, y0);
-
 [t,yInt] = ode45(@(t,y) cartSinglePendDist(t, y, hybrid_LQR_V(y,yGoal,K,par) , par),tInt, y0);
 % [t,yInt] = ode45(@(t,y) cartSinglePend(y, 0 , par),tInt, y0);
 

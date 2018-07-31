@@ -69,3 +69,20 @@ plotPar.Frange = [min(Fp),max(Fp)];
 for j = 10:10:length(tInt)
     drawCartSinglePendForce( yInt(j,:), tInt(j), Fp(j), par,plotPar)
 end
+
+    
+%% 
+ vidfile = VideoWriter( [rootPath filesep 'figs' filesep 'cartSinglePend_LQRControl.mp4'],'MPEG-4');
+ vidfile.FrameRate = 30;
+ open(vidfile);
+
+figure( 'Position',[100,550,1000,400] );
+for j = 10:10:length(tInt)
+    drawCartSinglePendForce( yInt(j,:), tInt(j), Fp(j), par,plotPar)
+    drawnow
+    hold off 
+    drawnow
+    im = getframe(gcf); 
+    writeVideo(vidfile, im);
+end
+close(vidfile)

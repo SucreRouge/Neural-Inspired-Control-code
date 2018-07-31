@@ -1,14 +1,17 @@
 clc;clear all;close all
 
+
+run('config_cartSinglePend');
+
 mc = 5;
-m1 = 1;
-m2 = 1;
-m3 = 1;
+m1 = .5;
+m2 = .5;
+m3 = .5;
 g = -10;
-L1 = 0.8;
-L2 = 0.8;
-L3 = 0.8;
-b = 0;
+L1 = 0.7;
+L2 = 0.7;
+L3 = 0.7;
+b = 0.001;
 c = 0.001;
 par.mc = mc; par.m1 = m1; par.m2 = m2; par.m3 = m3; par.L1 = L1; par.L2 = L2; par.L3 = L3; par.b = b; par.c=c; par.g=g;
 
@@ -55,3 +58,20 @@ end
 [U,S,V] = svd(yInt','econ');
 figure( 'Position',[1100,350,800,700] );
     scatter3(V(:,4),V(:,2),V(:,3) )
+
+    
+%% 
+ vidfile = VideoWriter( [rootPath filesep 'figs' filesep 'cartTriplePend_noControl.mp4'],'MPEG-4');
+ vidfile.FrameRate = 30;
+ open(vidfile);
+
+figure( 'Position',[100,550,1000,400] );
+for j = 10:10:length(tInt)
+    drawCartTriplePend( yInt(j,:), tInt(j), par )
+    drawnow
+    hold off 
+    drawnow
+    im = getframe(gcf); 
+    writeVideo(vidfile, im);
+end
+close(vidfile)

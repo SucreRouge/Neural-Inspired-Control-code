@@ -91,3 +91,23 @@ figure();plot(u)
 %     plot(tInt,thetDot)
 %     subplot(313)
 %     plot(tInt,xDot)
+
+% 
+% if true
+%      vidfile = VideoWriter( [rootPath filesep 'figs' filesep 'cartSinglePend_hybridLQR_V_control.mp4'],'MPEG-4');
+%      vidfile.FrameRate = 15;
+%      open(vidfile);
+% 
+%     figure( 'Position',[100,550,1000,400] );
+%     for j = 10:10:length(tInt)
+%         drawCartSinglePend( yInt(j,:), tInt(j), par)
+% %         scatter( sin(psi_cg(j))*r_cg(j), -cos(psi_cg(j)).*r_cg(j),50,'or','filled')
+%         drawnow
+%         hold off 
+%         drawnow
+%         im = getframe(gcf); 
+%         writeVideo(vidfile, im);
+%     %     pause(0.02)
+%     end
+%     close(vidfile)
+% end

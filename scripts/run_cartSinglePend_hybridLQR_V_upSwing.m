@@ -23,7 +23,7 @@ par.dist = 0;
 % y0 = [0; 0; pi*11/12; 0];
 y0 = [0; 0; pi*7/10; 0];
 % y0 = [0; 0; pi*4/10; 0]; 
-% y0 = [0; 0; pi*2/10; 0];
+% y0 = [0; 0; pi*0; 0];
 
 yGoal = [0; 0; pi; 0];
 
@@ -31,7 +31,7 @@ yGoal = [0; 0; pi; 0];
 %% simulate cart 
 % [t,yInt] = ode45(@(t,y)cartSinglePend(y, -K*(y-yGoal), par), tInt, y0);
 
-[t,yInt] = ode45(@(t,y) cartSinglePend(y, hybrid_LQR_V(y,yGoal,K,par) , par),tInt, y0);
+[t,yInt] = ode45(@(t,y) cartSinglePend(y, hybrid_LQR_V_upswing(y,yGoal,K,par) , par),tInt, y0);
 % [t,yInt] = ode45(@(t,y) cartSinglePend(y, 0 , par),tInt, y0);
 
 
@@ -92,8 +92,8 @@ figure();plot(u)
 
 
 %% create video
-if true
-     vidfile = VideoWriter( [rootPath filesep 'figs' filesep 'cartSinglePend_hybridLQR_V_control.mp4'],'MPEG-4');
+if false
+     vidfile = VideoWriter( [rootPath filesep 'figs' filesep 'cartSinglePend_hybridLQR_V_upSwing.mp4'],'MPEG-4');
      vidfile.FrameRate = 15;
      open(vidfile);
 

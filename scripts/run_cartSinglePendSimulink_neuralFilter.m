@@ -9,7 +9,7 @@ yGoal = [2; 0; pi; 0];
 
 % set time parameters
 dt = 0.001; 
-tLast = 20;
+tLast = 30;
 tInt = dt:dt:tLast;
 tSamp = 0.001;
 
@@ -24,7 +24,7 @@ G = 3;
 tSTA = -0.5:tSamp:0;
 lenSTA = length(tSTA);
 nDelays = lenSTA -2; 
-STAw = 0.3;   % width in seconds
+STAw = 0.01;   % width in seconds
 STAd = 0;  
 STAFunc = @(t) exp(- ((tSTA+STAd)./STAw).^2);
 STA = STAFunc( tSTA ) / norm( STAFunc(tSTA), 1 )*G;
@@ -47,10 +47,10 @@ B = [0 ;
     -s/(mc*L)];
 
 %% set control gain  
-r = 1e0;
+r = 1e-3;
 Q = diag(ones(4,1)); 
 % Q = diag(zeros(4,1)); 
-Q(2,2) = 10 ;
+Q(1,1) = 10 ;
 K = lqr( A,B,Q,R);
 
 %% run simulink 
@@ -197,4 +197,70 @@ figure('Position',[1100,550,400,400] ); hold on;
     p2 = plot(tEncoded,encodedSTA,'k');
     p3 = plot(tEncoded,encodedNLD,'r');
     legend([p1(1),p2(1),p3(1)],'Sensory input','STA filtered','STA + NLD filtered','Location','Best')
-%
+    
+    
+    
+%% 
+m = par.mp;
+M = par.mc;
+L = par.L;
+% dimensions
+W = 1*sqrt(M/5);  % cart width
+H = .5*sqrt(M/5); % cart height
+wr = .2; % wheel radius
+mr = .3*sqrt(m); % mass radius
+par.xl = [-4,4];
+    figure( 'Position',[100,550,1000,400] );
+for j = 4000:500:length(tInt)% input wrangling 
+x = yInt(j,1);
+th = yInt(j,3);
+% positions
+y = wr/2+H/2; % cart vertical position
+w1x = x-.9*W/2;
+w1y = 0;
+w2x = x+.9*W/2-wr;
+w2y = 0;
+px = x + L*sin(th);
+py = y - L*cos(th);
+col = [1,1,1]*0;
+plot([-10 10],[0 0],'k','LineWidth',2)
+hold on
+rectangle('Position',[x-W/2,y-H/2,W,H],'Curvature',.1,'FaceColor',[216,218,235]/255)
+rectangle('Position',[w1x,w1y,wr,wr],'Curvature',1,'FaceColor',[1,1,1]*0.5)
+rectangle('Position',[w2x,w2y,wr,wr],'Curvature',1,'FaceColor',[1,1,1]*0.5)
+% plot([x px],[y py],'k','LineWidth',2)
+plot([x px],[y py],'Color',col ,'LineWidth',2)
+
+% j_swing = 
+for k = 4000:500:j
+    x = yInt(k,1);
+    th = yInt(k,3);
+    px = x + L*sin(th);
+    py = y - L*cos(th);
+    col_r = [255,50,50,k/j*255/2]/255;
+%     rectangle('Position',[x-W/2,y-H/2,W,H],'Curvature',.1,'FaceColor',[216,218,235,25]/255,'EdgeColor',[0,0,0,0.1])
+%     rectangle('Position',[w1x,w1y,wr,wr],'Curvature',1,'FaceColor',[1,1,1,0.02]*0.5,'EdgeColor',[0,0,0,0.1])
+%     rectangle('Position',[w2x,w2y,wr,wr],'Curvature',1,'FaceColor',[1,1,1,0.02]*0.5,'EdgeColor',[0,0,0,0.1])
+    % plot([x px],[y py],'k','LineWidth',2)
+%     plot([x px],[y py],'Color',col ,'LineWidth',2)
+%     plot([x px],[y py],'Color',[0,0,0,0.1] ,'LineWidth',2)
+%     rectangle('Position',[px-mr/2,py-mr/2,mr,mr],'Curvature',1,'FaceColor',col_r,'EdgeColor',[0,0,0,(k)/j])
+    rectangle('Position',[px-mr/2,py-mr/2,mr,mr],'Curvature',1,'FaceColor',col_r,'EdgeColor','none')
+end
+
+xl = par.xl;
+yl = [-2.5, 2.5];
+
+cartAx = { 'XTick', linspace(xl(1),xl(2),3), ...
+            'YTick', linspace(yl(1),yl(2),3), ...
+            'XLim', xl, ...
+            'YLim', yl, ...
+            'DataAspectRatio',[1 1 1],...
+            'PlotBoxAspectRatio', [3 4 4],...
+            };
+set(gca(),cartAx{:})
+title( ['Time = ', num2str( j*1e-2), ' (s)']);
+    
+drawnow
+hold off
+end

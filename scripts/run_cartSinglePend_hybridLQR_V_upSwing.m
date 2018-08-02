@@ -16,7 +16,7 @@ B = [0 ;
     -s/(mc*L)];
 
 %% set control gain  
-R = 1e3
+R = 1e3;
 K = lqr( A,B,Q,R);
 
 par.dist = 0;
@@ -81,12 +81,19 @@ for j = 1:length(yInt)
 end
 % figure();plot(u)
 figure();plot(u)
-% %% 
-% figure()
+ %% 
+figure(); hold on
+%     plot(tInt,yInt)
 %     subplot(311)
-%     plot(tInt,thet)
+    plot(tInt,thet)
 %     subplot(312)
-%     plot(tInt,thetDot)
+    plot(tInt,thetDot)
+    plot(tInt,u)
+    xlabel('Time (s)')
+    ylabel('rad, rad/s, N')
+    legend('$\theta$','$\dot{\theta}$','u')
+    axis([0,15,-10,40])
+%     ylabel('Total Energy T+V (J)')
 %     subplot(313)
 %     plot(tInt,xDot)
 
@@ -111,3 +118,61 @@ if false
     close(vidfile)
 end
 
+%% 
+m = par.mp;
+M = par.mc;
+L = par.L;
+% dimensions
+W = 1*sqrt(M/5);  % cart width
+H = .5*sqrt(M/5); % cart height
+wr = .2; % wheel radius
+mr = .3*sqrt(m); % mass radius
+par.xl = [-4,4];
+    figure( 'Position',[100,550,1000,400] );
+for j = 10:5:length(tInt)/3% input wrangling 
+x = yInt(j,1);
+th = yInt(j,3);
+% positions
+y = wr/2+H/2; % cart vertical position
+w1x = x-.9*W/2;
+w1y = 0;
+w2x = x+.9*W/2-wr;
+w2y = 0;
+px = x + L*sin(th);
+py = y - L*cos(th);
+col = [1,1,1]*0;
+plot([-10 10],[0 0],'k','LineWidth',2)
+hold on
+rectangle('Position',[x-W/2,y-H/2,W,H],'Curvature',.1,'FaceColor',[216,218,235]/255)
+rectangle('Position',[w1x,w1y,wr,wr],'Curvature',1,'FaceColor',[1,1,1]*0.5)
+rectangle('Position',[w2x,w2y,wr,wr],'Curvature',1,'FaceColor',[1,1,1]*0.5)
+% plot([x px],[y py],'k','LineWidth',2)
+plot([x px],[y py],'Color',col ,'LineWidth',2)
+
+% j_swing = 
+for k = 5:5:j
+    x = yInt(k,1);
+    th = yInt(k,3);
+    px = x + L*sin(th);
+    py = y - L*cos(th);
+    col_r = [255,50,50,k/j*255/2]/255;
+    rectangle('Position',[px-mr/2,py-mr/2,mr,mr],'Curvature',1,'FaceColor',col_r,'EdgeColor',[0,0,0,(k)/j])
+%     rectangle('Position',[px-mr/2,py-mr/2,mr,mr],'Curvature',1,'FaceColor',col_r,'EdgeColor','none')
+end
+
+xl = par.xl;
+yl = [-2.5, 2.5];
+
+cartAx = { 'XTick', linspace(xl(1),xl(2),3), ...
+            'YTick', linspace(yl(1),yl(2),3), ...
+            'XLim', xl, ...
+            'YLim', yl, ...
+            'DataAspectRatio',[1 1 1],...
+            'PlotBoxAspectRatio', [3 4 4],...
+            };
+set(gca(),cartAx{:})
+title( ['Time = ', num2str( j*1e-2), ' (s)']);
+    
+drawnow
+hold off
+end

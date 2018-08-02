@@ -15,18 +15,19 @@ tSamp = 0.001;
 
 % Noise and filtering parameters
 neuralEncodingOn = 1;
-sensorNoiseVariance = [1 1 1 1]*1e-4';
-distXAccVariance =  1e-4 ;
-distThetaAccVariance = 1e-4 ;
+sensorNoiseVariance = [1 1 1 1]*0;%1e-4';
+distXAccVariance =  0;%1e-4 ;
+distThetaAccVariance = 0;%1e-4 ;
 
+G = 3;
 % neural encoding parameters 
 tSTA = -0.5:tSamp:0;
 lenSTA = length(tSTA);
 nDelays = lenSTA -2; 
-STAw = 0.2;   % width in seconds
+STAw = 0.3;   % width in seconds
 STAd = 0;  
 STAFunc = @(t) exp(- ((tSTA+STAd)./STAw).^2);
-STA = STAFunc( tSTA ) / norm( STAFunc(tSTA), 1 );
+STA = STAFunc( tSTA ) / norm( STAFunc(tSTA), 1 )*G;
 delayVal = find( cumsum(STA) >=0.5, 1);
 % NLDs = 0;
 % NLDg = 1;
@@ -46,6 +47,10 @@ B = [0 ;
     -s/(mc*L)];
 
 %% set control gain  
+r = 1e0;
+Q = diag(ones(4,1)); 
+% Q = diag(zeros(4,1)); 
+Q(2,2) = 10 ;
 K = lqr( A,B,Q,R);
 
 %% run simulink 

@@ -48,7 +48,7 @@ end
 
 
 %% 
-if true
+if false
      vidfile = VideoWriter( [rootPath filesep 'figs' filesep 'cartSinglePend_noControl.mp4'],'MPEG-4');
      vidfile.FrameRate = 15;
      open(vidfile);

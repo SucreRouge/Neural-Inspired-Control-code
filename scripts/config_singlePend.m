@@ -4,6 +4,7 @@
 rootPath = fileparts(fileparts(mfilename('fullpath') ));
 addpath([rootPath filesep 'functions'])
 addpath([rootPath filesep 'scripts'])
+addpath([rootPath filesep 'figs'])
 % addpath([rootPath filesep 'simulink'])
 
 % physical parameters

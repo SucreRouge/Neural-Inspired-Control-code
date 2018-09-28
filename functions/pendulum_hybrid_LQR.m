@@ -9,6 +9,7 @@ L= par.L;
 b = par.b; 
 
 thet = state(1);
+upDelta = wrapToPi(state(1)-pi);
 thetDot = state(2);
 
 V = cos(thet)*L*mp*g;
@@ -17,21 +18,30 @@ E = V+T;
 
 E0 = cos(stateGoal(1))*L*mp*g;
 
-thet_threshold = pi*0.1;
+thet_threshold = 0.2;
 E_error = ( cos(pi) - cos( thet_threshold - pi))*L*mp*g;
 
 
-if   ( ( wrapToPi(abs(thet))-pi) < thet_threshold ) && ( abs(E-E0) < E_error )
-    % LQR
-    u = -K*(   [  sin(thet-pi); state(2) ]);  % why the sin? it wraps theta nicely
-elseif ( E-E0 > 0)
-    % remove energy 
-    u = -sign(thetDot) ; 
-elseif (E-E0 < 0 )
-    % add energy 
-    u = sign(thetDot) ; 
+
+if ( E-E0 > 0.1) &&         ~(( abs( upDelta ) < thet_threshold ) &&  (abs(state(2)) < thet_threshold) )
+    u = -sign( state(2) )*5 ; 
+elseif (E-E0 < -0.1 ) &&    ~(( abs( upDelta ) < thet_threshold ) &&  (abs(state(2)) < thet_threshold) )
+    u = sign( state(2) )*5 ; 
+    
+% elseif  ( abs( upDelta ) > thet_threshold ) && (abs(E-E0) < 5 )
+elseif  ( abs( upDelta ) < thet_threshold ) &&  (abs(state(2)) < thet_threshold)
+%     upDelta
+%     thet
+    u = -K*(   [  upDelta ; state(2) ]); 
 else
-    % if energy levels are good, but not in linear control range 
     u = 0;
 end
 
+
+
+
+
+
+
+    
+% 

@@ -27,6 +27,7 @@ u = 0;
 % [t,yInt] = ode45(@(t,y)singlePend(y',u,par),tInt, y0);
 % [t,yInt] = ode45(@(t,y) singlePend(y,-K*(y-yGoal),par), tInt, y0);
 [t,yInt] = ode23(@(t,y) singlePend(y, pendulum_hybrid_LQR(y,yGoal,K,par), par), tInt, y0);
+
 %% Plot and animate
 
 thet = yInt(:,1);

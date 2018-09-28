@@ -2,6 +2,16 @@ clc;clear all;close all
 
 % Initialize model parameters 
 run('config_singlePend');% physical parameters
+
+
+
+% time parameters
+dt = 0.01; 
+tLast = 40;
+tSamp = 0.1;
+tInt = dt:dt:tLast;
+
+% 
 mp = 1;
 g = -10;
 % L = 2;
@@ -9,22 +19,57 @@ L = 4*abs(g)/pi^2;
 b = 0;
 % b = 0.0001;
 par.mp = mp; par.g = g; par.L = L; par.b = b; 
-% time parameters
+
+
+% eqTheta = pi;  % which equilibrium? (theta = 0[down], or theta = pi[up] )
+% s = cos(eqTheta);
+A = [ 0   1        ;
+      0   -b/(mp*L^2)];     
+B = [0 ;
+    1/(mp*L^2)];
+
+% set control gain
+Q = [10,0; 0,1];
+R = 1e-3; 
+K = lqr( A,B,Q,R);
+par.b = 0;
+
+% y0 = [-pi*0.90,0]';
+% % y0 = [-pi*0.8,3]';
+% y0 = [-pi*0.5,0]';
+% y0 = [pi*0.1,0]';
+y0 = [pi*0.01,0]';
+% % y0 = [pi*0.85,0]';
+% % y0 = [pi*0.8,3]';
+yGoal = [pi,0]';
+
+%% simulate cart 
+u = 0;
+% [t,yInt] = ode45(@(t,y)singlePend(y',u,par),tInt, y0);
+% [t,yInt] = ode45(@(t,y) singlePend(y,-K*(y-yGoal),par), tInt, y0);
+[t_sim,yInt_sim] = ode23(@(t,y) singlePend(y, pendulum_hybrid_LQR(y,yGoal,K,par), par), tInt, y0);
+
+yInt_sim(:,1) = wrapToPi( yInt_sim(:,1));
+for j = 1:length(yInt_sim)
+    u_col(j) = pendulum_hybrid_LQR(yInt_sim(j,:),yGoal,K,par); 
+end
+
+
+
+%% Phase diagram
+
 dt = 0.01; 
-tLast = 10;
+tLast = 15;
 tSamp = 0.1;
 tInt = dt:dt:tLast;
 
-u=0;
-
-%% Phase diagram 
-thetZoom = 0.4;
+thetZoom = 0.5;
 
 y0 = [  [-0.5;-1.1;-1.8;-2.4]+0.01 ,zeros( 4,1)+0.01 ;
          -pi,0.2;
          ones(4,1)*-pi ,  linspace(1.5,4,4)';
          ];
-nT = [210,230,260,330,530,    320,250,200,150,150,100,100,100,50]
+nT = [210,230,260,330,530,    320,250,200,150,150,100,100,100,50];
 
 for j = 1:length(y0)
         [~,yInt(:,1:2,j) ] = ode45(@(t,y)singlePend(y',u,par),tInt, y0(j,:));
@@ -65,7 +110,7 @@ view(2)
 
 
 %%
-greyVal = 0.6
+greyVal = 0.6;
 for j = 1:length(y0)
     for k = 1:length(mod)
         
@@ -75,6 +120,27 @@ for j = 1:length(y0)
         plot( -yInt(1:nT(j),1,j) + mod(k),-yInt(1:nT(j),2,j) ,'Color',[1,1,1]*greyVal)
     end
 end
+
+
+% plot( yInt_sim(:,1),yInt_sim(:,2) ,'Color',[1,1,1]*0)
+% plot( yInt_sim(:,1),yInt_sim(:,2) ,'Color','r','LineWidth',2)
+%%
+u_pos = u_col == 5;
+u_neg = u_col == -5;
+u_deg = logical( u_pos+u_neg );
+u_0 = u_col == 0;
+u_rest = ~(u_deg+u_0);
+
+u_sig = zeros(length(u_pos),3);
+u_sig(u_rest,:) = nonzeros(u_rest)*[1,0,0];
+u_sig(u_0,:) = nonzeros(u_0)*[0,1,0];
+u_sig(u_deg,:) = nonzeros(u_deg)*[0,0,1];
+% u_sig = u_sig
+% u_sig'*[1,1,1]
+
+scatter( yInt_sim(:,1),yInt_sim(:,2),5,u_sig  ,'fill')
+
+
 %%
 
 for j = 1:length(y0)
@@ -140,14 +206,14 @@ tLast = 5;
 tSamp = 0.1;
 tInt = dt:dt:tLast;
 
-y0 = [linspace(0,0.35,8)'+pi,-ones(8,1)*0.35;
-        -linspace(0,0.35,8)'+pi,ones(8,1)*0.35;
-        0.22328+pi,-0.35;
-        -0.22328+pi,0.35;
-        0.22+pi,-0.35;
-        0.23+pi,-0.35;
-        -0.22+pi,0.35;
-        -0.23+pi,0.35;
+y0 = [linspace(0,thetZoom-0.05,8)'+pi,-ones(8,1)* (thetZoom-0.05);
+        -linspace(0,thetZoom-0.05,8)'+pi,ones(8,1)* (thetZoom-0.05);
+%         0.22328+pi,-(thetZoom-0.05);
+%         -0.22328+pi,(thetZoom-0.05);
+%         0.22+pi,-(thetZoom-0.05);
+%         0.23+pi,-(thetZoom-0.05);
+%         -0.22+pi,(thetZoom-0.05);
+%         -0.23+pi,(thetZoom-0.05);
         ];
 
 for j = 1:length(y0)
@@ -194,6 +260,11 @@ for j = 1:length(y0)
    
 end
 
+% plot( yInt_sim(:,1),yInt_sim(:,2) ,'Color',[1,1,1]*0)
+% plot( yInt_sim(:,1),yInt_sim(:,2) ,'Color','r','LineWidth',2)
+scatter( yInt_sim(:,1),yInt_sim(:,2),5,u_sig  ,'fill')
+
+
 % regular axes
 xAx = [-10,10; 
        [1,1]*-pi; 
@@ -211,7 +282,7 @@ axis square
 axis square
 ax = gca();
 phaseAx = {'XLim',[-1,1]*thetZoom+pi,'YLim', [-1,1]*thetZoom ,...
-            'XTick', [-1,0,1]*thetZoom+pi ,'XTickLabel',{'$\pi-0.3$','$\pi$','$\pi+0.3$'},...
+            'XTick', [-1,0,1]*thetZoom+pi ,'XTickLabel',{'$\pi-0.5$','$\pi$','$\pi+0.5$'},...
             'YTick', [-1,0,1]*thetZoom,'YTickLabel',[-1,0,1]*thetZoom,...
         };
 xlabel('$\theta$','FontSize',14); 
@@ -219,22 +290,23 @@ ylabel('$\dot{ \theta}$','FontSize',14,'Rotation',0)
 set(ax,phaseAx{:})
 
 %% 
-set(gca, 'LooseInset', get(gca(), 'TightInset')); % remove whitespace around figure
-% % % Here we preserve the size of the image when we save it.
-set(fig1,'InvertHardcopy','on');
-set(fig1,'PaperUnits', 'inches');
-papersize = get(fig1, 'PaperSize');
-left = (papersize(1)- width)/2;
-bottom = (papersize(2)- height)/2;
-myfiguresize = [left, bottom, width, height];
-set(fig1, 'PaperPosition', myfiguresize);
-% saving of image
-print(fig1, [rootPath filesep 'figs' filesep 'Figure_phasePortrait'], '-dpng', '-r300');
-% total hack, why does saving to svg scale image up???
-stupid_ratio = 15/16;
-myfiguresize = [left, bottom, width*stupid_ratio, height*stupid_ratio];
-set(fig1, 'PaperPosition', myfiguresize);
+if 0 
+    set(gca, 'LooseInset', get(gca(), 'TightInset')); % remove whitespace around figure
+    % % % Here we preserve the size of the image when we save it.
+    set(fig1,'InvertHardcopy','on');
+    set(fig1,'PaperUnits', 'inches');
+    papersize = get(fig1, 'PaperSize');
+    left = (papersize(1)- width)/2;
+    bottom = (papersize(2)- height)/2;
+    myfiguresize = [left, bottom, width, height];
+    set(fig1, 'PaperPosition', myfiguresize);
+    % saving of image
+    print(fig1, [rootPath filesep 'figs' filesep 'Figure_phasePortrait_lowE'], '-dpng', '-r300');
+    % total hack, why does saving to svg scale image up???
+    stupid_ratio = 15/16;
+    myfiguresize = [left, bottom, width*stupid_ratio, height*stupid_ratio];
+    set(fig1, 'PaperPosition', myfiguresize);
 
-print(fig1, [rootPath filesep 'figs' filesep 'Figure_phasePortrait'], '-dsvg', '-r499');
-
+    print(fig1, [rootPath filesep 'figs' filesep 'Figure_phasePortrait_lowE'], '-dsvg', '-r499');
+end
 

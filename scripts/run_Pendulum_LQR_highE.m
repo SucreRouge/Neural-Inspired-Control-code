@@ -3,6 +3,10 @@ clc;clear all;close all
 % Initialize model parameters 
 run('config_singlePend');
 
+
+L = 4*abs(g)/pi^2;
+par.L = L
+
 % eqTheta = pi;  % which equilibrium? (theta = 0[down], or theta = pi[up] )
 % s = cos(eqTheta);
 A = [ 0   1        ;
@@ -10,6 +14,11 @@ A = [ 0   1        ;
 B = [0 ;
     1/(mp*L^2)];
 
+% time parameters
+dt = 0.01; 
+tLast = 40;
+tSamp = 0.1;
+tInt = dt:dt:tLast;
 %% set control gain
 Q = [1,0; 0,1];
 R = 1e-3; 

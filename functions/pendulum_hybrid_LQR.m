@@ -19,20 +19,20 @@ E = V+T;
 E0 = cos(stateGoal(1))*L*mp*g;
 
 thet_threshold = 0.2;
-E_error = ( cos(pi) - cos( thet_threshold - pi))*L*mp*g;
+E_threshold = 0.3;
+% E_error = ( cos(pi) - cos( thet_threshold - pi))*L*mp*g;
 
 
 
-if ( E-E0 > 0.1) &&         ~(( abs( upDelta ) < thet_threshold ) &&  (abs(state(2)) < thet_threshold) )
+if ( E-E0 > E_threshold) &&         ~(( abs( upDelta ) < thet_threshold ) &&  (abs(state(2)) < thet_threshold) )
     u = -sign( state(2) )*5 ; 
-elseif (E-E0 < -0.1 ) &&    ~(( abs( upDelta ) < thet_threshold ) &&  (abs(state(2)) < thet_threshold) )
+elseif (E-E0 < E_threshold ) &&    ~(( abs( upDelta ) < thet_threshold ) &&  (abs(state(2)) < thet_threshold) )
     u = sign( state(2) )*5 ; 
-    
-% elseif  ( abs( upDelta ) > thet_threshold ) && (abs(E-E0) < 5 )
 elseif  ( abs( upDelta ) < thet_threshold ) &&  (abs(state(2)) < thet_threshold)
-%     upDelta
-%     thet
-    u = -K*(   [  upDelta ; state(2) ]); 
+    u = -K'*(   [  upDelta ; state(2) ]); 
+    u(u>5) = u_max;
+    u(u<-5) = -u_max;
+    u_cat = 3; 
 else
     u = 0;
 end
